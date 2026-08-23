@@ -10,10 +10,22 @@
                 },
                 {
                     "kind": "if",
+                    "cond": {
+                        "left": "1",
+                        "cond": "==",
+                        "right": "1"
+                    },
                     "body": [
                         {
-                            "kind": "hex",
-                            "data": "10"
+                            "body": [
+                                {
+                                    "kind": "hex",
+                                    "data": "10"
+                                }
+                            ]
+                        },
+                        {
+                            "body": []
                         }
                     ]
                 }

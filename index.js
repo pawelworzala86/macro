@@ -2,7 +2,7 @@ const fs = require('fs')
 
 const source = fs.readFileSync('./macro.inc').toString()
 
-const tokens = source.split(/\ |(\n)|\r/gm).filter(f=>f?(f.length):false)
+const tokens = source.split(/\ |(\n)|\r|(\=)/gm).filter(f=>f?(f.length):false)
 
 console.log(tokens)
 
@@ -48,17 +48,31 @@ for(let index=0;index<tokens.length;index++){
         })
     }
     if(token=='if'){
+        let left = tokens[++index]
+        let cond = tokens[++index]
+        if(tokens[index+1]=='='){
+            cond += tokens[++index]
+        }
+        let right = tokens[++index]
         const node = {
             kind: 'if',
             parent: activeAST,
-            body: [],
+            cond: {
+                left,cond,right,
+            },
+            body: [
+                {body: []},
+                {body: []}
+            ],
         }
         activeAST.body.push(node)
-        activeAST = node
-        index++
+        node.body[0].parent = node
+        node.body[1].parent = node
+        activeAST = node.body[0]
+        //index++
     }
     if((token=='end')&&(tokens[index+1]=='if')){
-        activeAST = activeAST.parent
+        activeAST = activeAST.parent.parent
         index++
     }
 }
@@ -75,7 +89,11 @@ function executeAST(node){
                 executeAST(MACROS['test'])
             }
             if(n.kind=='if'){
-                executeAST(n)
+                if(eval(n.cond.left+n.cond.cond+n.cond.right)){
+                    executeAST(n.body[0])
+                }else{
+                    executeAST(n.body[1])
+                }
             }
         }
     }
