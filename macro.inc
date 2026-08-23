@@ -5,8 +5,10 @@ macro test paramA, paramB
     else
         hex 11
     end if
-    macro test2
-        hex 99
+    macro test2 paramAA
+        if paramAA==undefined
+            hex 99
+        end if
     end macro
     test2
 end macro

@@ -51,12 +51,31 @@
                 {
                     "kind": "macro",
                     "name": "test2",
-                    "params": [],
+                    "params": [
+                        "paramAA"
+                    ],
                     "body": [
                         {
-                            "kind": "hex",
-                            "data": [
-                                "99"
+                            "kind": "if",
+                            "cond": {
+                                "left": "paramAA",
+                                "cond": "==",
+                                "right": "undefined"
+                            },
+                            "body": [
+                                {
+                                    "body": [
+                                        {
+                                            "kind": "hex",
+                                            "data": [
+                                                "99"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "body": []
+                                }
                             ]
                         }
                     ]
