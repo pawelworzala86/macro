@@ -120,6 +120,11 @@
             "params": [
                 "100.12"
             ]
+        },
+        {
+            "kind": "assign",
+            "name": "VALA",
+            "value": "100"
         }
     ]
 }

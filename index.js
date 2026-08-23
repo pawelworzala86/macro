@@ -118,11 +118,21 @@ for(let index=0;index<tokens.length;index++){
         activeAST = activeAST.parent.parent
         index++
     }
+    if(token=='='){
+        const name = tokens[index-1]
+        const node = {
+            kind: 'assign',
+            name,
+            value: tokens[++index],
+        }
+        activeAST.body.push(node) 
+    }
 }
 
 let OFFSET = 0
 let hex = ''
 let PARAMS = []
+let DATASET = {}
 
 function addHex(value){
     const clear = value.replace(/\ |\n|\r/gm,'')
@@ -183,6 +193,9 @@ function executeAST(node){
                     addHex(parseDataType(p,bytes)+'\n')
                 })
             }
+            if(n.kind=='assign'){
+                DATASET[n.name] = n.value
+            }
         }
         PARAMS.splice(PARAMS.length-1,1)
     }
@@ -206,3 +219,5 @@ function removeParents(node){
 console.log(removeParents(AST))
 
 fs.writeFileSync('./AST.json',JSON.stringify(AST,null,4))
+
+console.log(DATASET)
