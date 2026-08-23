@@ -21,3 +21,5 @@ dd 100u
 dd 100.12
 
 VALA = 100
+
+dd VALA,64

@@ -145,30 +145,39 @@ function addHex(value){
 
 
 function parseDataType(value,bytes){
+    let val = data(value)
+    if(val!==value){
+        value = val
+    }
     if((value.indexOf('.')>-1)||value.endsWith('f')){
         return convert.hexToLE(convert.parseFloatToHex(value,bytes))
     }else if(value.endsWith('u')){
         return convert.hexToLE(convert.parseUnsignedToHex(value,bytes))
+    }else if(parseFloat(value)){
+        return convert.hexToLE(convert.parseIntToHex(value,bytes))
     }
-    return convert.hexToLE(convert.parseIntToHex(value,bytes))
+    return 'REPLS'
+}
+
+function data(name){
+    //console.log('data(name): ',name,params)
+    for(let idx=PARAMS.length-1;idx>=0;idx--){
+        const params = PARAMS[idx]
+        let index = 0
+        while(params[0][index]){
+            if(params[0][index]==name){
+                return params[1][index]
+            }
+            index++
+        }
+    }
+    if(DATASET[name]!==undefined){
+        return DATASET[name]
+    }
+    return name
 }
 
 function executeAST(node){
-    function data(name){
-        //console.log('data(name): ',name,params)
-        for(let idx=PARAMS.length-1;idx>=0;idx--){
-            const params = PARAMS[idx]
-            let index = 0
-            while(params[0][index]){
-                if(params[0][index]==name){
-                    return params[1][index]
-                }
-                index++
-            }
-        }
-        return name
-    }
-
     if(node.body){
         for(const n of node.body){
             if(n.kind=='hex'){

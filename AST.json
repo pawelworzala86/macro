@@ -125,6 +125,13 @@
             "kind": "assign",
             "name": "VALA",
             "value": "100"
+        },
+        {
+            "kind": "dd",
+            "params": [
+                "VALA",
+                "64"
+            ]
         }
     ]
 }
