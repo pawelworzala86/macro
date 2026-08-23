@@ -127,7 +127,7 @@ function executeAST(node){
                 executeAST(MACROS['test'])
             }
             if(n.kind=='if'){
-                if(eval(n.cond.left+n.cond.cond+n.cond.right)){
+                if(eval(data(n.cond.left)+n.cond.cond+data(n.cond.right))){
                     executeAST(n.body[0])
                 }else{
                     executeAST(n.body[1])
