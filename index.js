@@ -47,6 +47,20 @@ for(let index=0;index<tokens.length;index++){
             kind: 'call',
         })
     }
+    if(token=='if'){
+        const node = {
+            kind: 'if',
+            parent: activeAST,
+            body: [],
+        }
+        activeAST.body.push(node)
+        activeAST = node
+        index++
+    }
+    if((token=='end')&&(tokens[index+1]=='if')){
+        activeAST = activeAST.parent
+        index++
+    }
 }
 
 let hex = ''
@@ -59,6 +73,9 @@ function executeAST(node){
             }
             if(n.kind=='call'){
                 executeAST(MACROS['test'])
+            }
+            if(n.kind=='if'){
+                executeAST(n)
             }
         }
     }
