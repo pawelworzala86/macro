@@ -22,6 +22,8 @@ dd 100.12
 
 VALA = 100
 
+dd testFunc
+
 testFunc:
 
 dd VALA,64
