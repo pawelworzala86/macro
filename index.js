@@ -2,7 +2,7 @@ const fs = require('fs')
 
 const source = fs.readFileSync('./macro.inc').toString()
 
-const tokens = source.split(/\ |(\n)|\r|(\=)|\,/gm).filter(f=>f?(f.length):false)
+const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)/gm).filter(f=>f?(f.length):false)
 tokens.push('\n')
 
 console.log(tokens)
@@ -30,7 +30,9 @@ for(let index=0;index<tokens.length;index++){
         index+=2
         const params = []
         while(tokens[index]!='\n'){
-            params.push(tokens[index])
+            if(tokens[index]!=','){
+                params.push(tokens[index])
+            }
             index++
         }
         node.params = params
@@ -62,7 +64,9 @@ for(let index=0;index<tokens.length;index++){
         activeAST.body.push(node)
         const params = []
         while(tokens[++index]!='\n'){
-            params.push(tokens[index])
+            if(tokens[index]!=','){
+                params.push(tokens[index])
+            }
         }
         node.params = params
     }
