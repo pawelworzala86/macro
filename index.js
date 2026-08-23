@@ -12,6 +12,8 @@ const AST = {
 }
 let activeAST = AST
 
+const MACROS = {}
+
 for(let index=0;index<tokens.length;index++){
     const token = tokens[index]
 
@@ -23,6 +25,8 @@ for(let index=0;index<tokens.length;index++){
         }
         activeAST.body.push(node)
         activeAST = node
+        MACROS['test'] = node
+        index++
     }
     if((token=='end')&&(tokens[index+1]=='macro')){
         activeAST = activeAST.parent
@@ -38,17 +42,31 @@ for(let index=0;index<tokens.length;index++){
             data: hex,
         })
     }
-}
-
-function executeAST(node){
-    if(node.body){
-        node.body.map(n=>{
-            executeAST(n)
+    if(MACROS[token]){
+        activeAST.body.push({
+            kind: 'call',
         })
     }
 }
 
+let hex = ''
+
+function executeAST(node){
+    if(node.body){
+        for(const n of node.body){
+            if(n.kind=='hex'){
+                hex += n.data+'\n'
+            }
+            if(n.kind=='call'){
+                executeAST(MACROS['test'])
+            }
+        }
+    }
+}
+
 executeAST(AST)
+
+fs.writeFileSync('./hex.txt',hex)
 
 
 function removeParents(node){
