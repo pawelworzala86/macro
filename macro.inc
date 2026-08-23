@@ -5,6 +5,10 @@ macro test paramA, paramB
     else
         hex 11
     end if
+    macro test2
+        hex 99
+    end macro
+    test2
 end macro
 
 test 01 08

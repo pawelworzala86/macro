@@ -19,8 +19,10 @@ for(let index=0;index<tokens.length;index++){
     const token = tokens[index]
 
     if(token=='macro'){
+        const name = tokens[index+1]
         const node = {
             kind: 'macro',
+            name,
             parent: activeAST,
             params: [],
             body: [],
@@ -34,7 +36,7 @@ for(let index=0;index<tokens.length;index++){
         node.params = params
         activeAST.body.push(node)
         activeAST = node
-        MACROS['test'] = node
+        MACROS[name] = node
         //index++
     }
     if((token=='end')&&(tokens[index+1]=='macro')){
@@ -54,6 +56,7 @@ for(let index=0;index<tokens.length;index++){
     if(MACROS[token]){
         const node = {
             kind: 'call',
+            name: token,
             params: [],
         }
         activeAST.body.push(node)
@@ -123,8 +126,8 @@ function executeAST(node){
                 }).join(' ')+'\n'
             }
             if(n.kind=='call'){
-                PARAMS.push([MACROS['test'].params,n.params])
-                executeAST(MACROS['test'])
+                PARAMS.push([MACROS[n.name].params,n.params])
+                executeAST(MACROS[n.name])
             }
             if(n.kind=='if'){
                 if(eval(data(n.cond.left)+n.cond.cond+data(n.cond.right))){

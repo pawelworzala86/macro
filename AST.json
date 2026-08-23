@@ -3,6 +3,7 @@
     "body": [
         {
             "kind": "macro",
+            "name": "test",
             "params": [
                 "paramA",
                 "paramB"
@@ -46,11 +47,30 @@
                             ]
                         }
                     ]
+                },
+                {
+                    "kind": "macro",
+                    "name": "test2",
+                    "params": [],
+                    "body": [
+                        {
+                            "kind": "hex",
+                            "data": [
+                                "99"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "kind": "call",
+                    "name": "test2",
+                    "params": []
                 }
             ]
         },
         {
             "kind": "call",
+            "name": "test",
             "params": [
                 "01",
                 "08"
@@ -58,6 +78,7 @@
         },
         {
             "kind": "call",
+            "name": "test",
             "params": [
                 "22",
                 "07"
