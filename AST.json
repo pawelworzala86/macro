@@ -127,6 +127,10 @@
             "value": "100"
         },
         {
+            "kind": "label",
+            "name": "testFunc"
+        },
+        {
             "kind": "dd",
             "params": [
                 "VALA",

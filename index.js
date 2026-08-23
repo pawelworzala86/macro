@@ -3,7 +3,7 @@ const convert = require('./convert.js')
 
 const source = fs.readFileSync('./macro.inc').toString()
 
-const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)/gm).filter(f=>f?(f.length):false)
+const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)|(\:)/gm).filter(f=>f?(f.length):false)
 tokens.push('\n')
 
 console.log(tokens)
@@ -127,6 +127,14 @@ for(let index=0;index<tokens.length;index++){
         }
         activeAST.body.push(node) 
     }
+    if(token==':'){
+        const name = tokens[index-1]
+        const node = {
+            kind: 'label',
+            name,
+        }
+        activeAST.body.push(node)
+    }
 }
 
 let OFFSET = 0
@@ -204,6 +212,9 @@ function executeAST(node){
             }
             if(n.kind=='assign'){
                 DATASET[n.name] = n.value
+            }
+            if(n.kind=='label'){
+                DATASET[n.name] = OFFSET
             }
         }
         PARAMS.splice(PARAMS.length-1,1)
