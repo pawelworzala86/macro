@@ -3,10 +3,19 @@
     "body": [
         {
             "kind": "macro",
+            "params": [
+                "paramA",
+                "paramB"
+            ],
             "body": [
                 {
                     "kind": "hex",
-                    "data": "00000000"
+                    "data": [
+                        "paramA",
+                        "00",
+                        "00",
+                        "00"
+                    ]
                 },
                 {
                     "kind": "if",
@@ -20,7 +29,9 @@
                             "body": [
                                 {
                                     "kind": "hex",
-                                    "data": "10"
+                                    "data": [
+                                        "10"
+                                    ]
                                 }
                             ]
                         },
@@ -28,7 +39,9 @@
                             "body": [
                                 {
                                     "kind": "hex",
-                                    "data": "11"
+                                    "data": [
+                                        "11"
+                                    ]
                                 }
                             ]
                         }
@@ -37,10 +50,18 @@
             ]
         },
         {
-            "kind": "call"
+            "kind": "call",
+            "params": [
+                "01",
+                "08"
+            ]
         },
         {
-            "kind": "call"
+            "kind": "call",
+            "params": [
+                "22",
+                "07"
+            ]
         }
     ]
 }

@@ -1,5 +1,5 @@
-macro test
-    hex 00 00 00 00
+macro test paramA, paramB
+    hex paramA 00 00 00
     if 1==0
         hex 10
     else
@@ -7,5 +7,5 @@ macro test
     end if
 end macro
 
-test
-test
+test 01 08
+test 22 07

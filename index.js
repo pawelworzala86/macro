@@ -2,7 +2,8 @@ const fs = require('fs')
 
 const source = fs.readFileSync('./macro.inc').toString()
 
-const tokens = source.split(/\ |(\n)|\r|(\=)/gm).filter(f=>f?(f.length):false)
+const tokens = source.split(/\ |(\n)|\r|(\=)|\,/gm).filter(f=>f?(f.length):false)
+tokens.push('\n')
 
 console.log(tokens)
 
@@ -21,21 +22,29 @@ for(let index=0;index<tokens.length;index++){
         const node = {
             kind: 'macro',
             parent: activeAST,
+            params: [],
             body: [],
         }
+        index+=2
+        const params = []
+        while(tokens[index]!='\n'){
+            params.push(tokens[index])
+            index++
+        }
+        node.params = params
         activeAST.body.push(node)
         activeAST = node
         MACROS['test'] = node
-        index++
+        //index++
     }
     if((token=='end')&&(tokens[index+1]=='macro')){
         activeAST = activeAST.parent
         index++
     }
     if(token=='hex'){
-        let hex = ''
+        let hex = []
         while(tokens[++index]!='\n'){
-            hex += tokens[index]
+            hex.push(tokens[index])
         }
         activeAST.body.push({
             kind: 'hex',
@@ -43,9 +52,16 @@ for(let index=0;index<tokens.length;index++){
         })
     }
     if(MACROS[token]){
-        activeAST.body.push({
+        const node = {
             kind: 'call',
-        })
+            params: [],
+        }
+        activeAST.body.push(node)
+        const params = []
+        while(tokens[++index]!='\n'){
+            params.push(tokens[index])
+        }
+        node.params = params
     }
     if(token=='if'){
         let left = tokens[++index]
@@ -81,14 +97,33 @@ for(let index=0;index<tokens.length;index++){
 }
 
 let hex = ''
+let PARAMS = []
 
 function executeAST(node){
+    function data(name){
+        //console.log('data(name): ',name,params)
+        for(let idx=PARAMS.length-1;idx>=0;idx--){
+            const params = PARAMS[idx]
+            let index = 0
+            while(params[0][index]){
+                if(params[0][index]==name){
+                    return params[1][index]
+                }
+                index++
+            }
+        }
+        return name
+    }
+
     if(node.body){
         for(const n of node.body){
             if(n.kind=='hex'){
-                hex += n.data+'\n'
+                hex += n.data.map(d=>{
+                    return data(d)
+                }).join(' ')+'\n'
             }
             if(n.kind=='call'){
+                PARAMS.push([MACROS['test'].params,n.params])
                 executeAST(MACROS['test'])
             }
             if(n.kind=='if'){
@@ -99,6 +134,7 @@ function executeAST(node){
                 }
             }
         }
+        PARAMS.splice(PARAMS.length-1,1)
     }
 }
 
