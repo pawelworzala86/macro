@@ -7,6 +7,8 @@ tokens.push('\n')
 
 console.log(tokens)
 
+const dataTypes = {dq:8,dd:4,dw:2,db:1}
+
 const AST = {
     kind: 'root',
     body: [],
@@ -18,6 +20,20 @@ const MACROS = {}
 for(let index=0;index<tokens.length;index++){
     const token = tokens[index]
 
+    if(Object.keys(dataTypes).includes(token)){
+        index++
+        const params = []
+        while(tokens[index]!='\n'){
+            if(tokens[index]!=','){
+                params.push(tokens[index])
+            }
+            index++
+        }
+        activeAST.body.push({
+            kind: token,
+            params,
+        })
+    }
     if(token=='macro'){
         const name = tokens[index+1]
         const node = {
@@ -139,6 +155,12 @@ function executeAST(node){
                 }else{
                     executeAST(n.body[1])
                 }
+            }
+            if(Object.keys(dataTypes).includes(n.kind)){
+                n.params.map(p=>{
+                    const bytes = dataTypes[n.kind]
+                    hex += 'DATATYPE'
+                })
             }
         }
         PARAMS.splice(PARAMS.length-1,1)
