@@ -1,0 +1,14 @@
+{
+    "kind": "root",
+    "body": [
+        {
+            "kind": "macro",
+            "body": [
+                {
+                    "kind": "hex",
+                    "data": "00000000"
+                }
+            ]
+        }
+    ]
+}
