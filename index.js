@@ -71,6 +71,9 @@ for(let index=0;index<tokens.length;index++){
         activeAST = node.body[0]
         //index++
     }
+    if(token=='else'){
+        activeAST = activeAST.parent.body[1]
+    }
     if((token=='end')&&(tokens[index+1]=='if')){
         activeAST = activeAST.parent.parent
         index++
