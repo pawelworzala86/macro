@@ -120,9 +120,15 @@ for(let index=0;index<tokens.length;index++){
     }
 }
 
+let OFFSET = 0
 let hex = ''
 let PARAMS = []
 
+function addHex(value){
+    const clear = value.replace(/\ |\n|\r/gm,'')
+    OFFSET += clear.length/2
+    hex += value
+}
 
 
 
@@ -156,9 +162,9 @@ function executeAST(node){
     if(node.body){
         for(const n of node.body){
             if(n.kind=='hex'){
-                hex += n.data.map(d=>{
+                addHex(n.data.map(d=>{
                     return data(d)
-                }).join(' ')+'\n'
+                }).join(' ')+'\n')
             }
             if(n.kind=='call'){
                 PARAMS.push([MACROS[n.name].params,n.params])
@@ -174,7 +180,7 @@ function executeAST(node){
             if(Object.keys(dataTypes).includes(n.kind)){
                 n.params.map(p=>{
                     const bytes = dataTypes[n.kind]
-                    hex += parseDataType(p,bytes)+'\n'
+                    addHex(parseDataType(p,bytes)+'\n')
                 })
             }
         }
