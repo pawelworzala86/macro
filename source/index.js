@@ -168,8 +168,10 @@ function parseDataType(value,bytes){
         return convert.hexToLE(convert.parseFloatToHex(value,bytes))
     }else if(value.endsWith('u')){
         return convert.hexToLE(convert.parseUnsignedToHex(value,bytes))
-    }else if(parseFloat(value)){
+    }else if(parseInt(value)||(value=='0')){
         return convert.hexToLE(convert.parseIntToHex(value,bytes))
+    }else if(value.startsWith("'")&&value.endsWith("'")){
+        return convert.stringToHex(value)
     }
     REPLS.push({
         ext: value,
@@ -218,6 +220,7 @@ function executeAST(node){
             if(Object.keys(dataTypes).includes(n.kind)){
                 n.params.map(p=>{
                     const bytes = dataTypes[n.kind]
+                    //console.log(':::',p,bytes)
                     addHex(parseDataType(p,bytes)+'\n')
                 })
             }

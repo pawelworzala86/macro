@@ -27,3 +27,5 @@ dd testFunc
 testFunc:
 
 dd VALA,64
+
+db 'hello',0

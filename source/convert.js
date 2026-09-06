@@ -47,9 +47,16 @@ function hexToLE(hex) {
     return bytes.reverse().join("");
 }
 
+function stringToHex(str) {
+    return Array.from(new TextEncoder().encode(str))
+        .map(byte => byte.toString(16).padStart(2, '0'))
+        .join('');
+}
+
 module.exports = {
     parseIntToHex,
     parseUnsignedToHex,
     parseFloatToHex,
-    hexToLE
+    hexToLE,
+    stringToHex,
 }
