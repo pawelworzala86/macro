@@ -227,18 +227,19 @@ function executeAST(node){
 
 executeAST(AST)
 
-const RP = REPLS[0]
-let off = 0
-let dat = data(RP.ext)
-dat = convert.hexToLE(convert.parseIntToHex(dat,4))
-console.log('dat',dat)
-for(let index=0;index<hex.length;index++){
-    if(!['\r','\n','\ '].includes(hex.charAt(index))){
-        off+=0.5
-    }
-    if(off==RP.OFFSET){
-        hex = hex.slice(0, index+2) + dat + hex.slice(index+2+dat.length);
-        index+=8
+for(const RP of REPLS){
+    let off = 0
+    let dat = data(RP.ext)
+    dat = convert.hexToLE(convert.parseIntToHex(dat,4))
+    console.log('dat',dat)
+    for(let index=0;index<hex.length;index++){
+        if(!['\r','\n','\ '].includes(hex.charAt(index))){
+            off+=0.5
+        }
+        if(off==RP.OFFSET){
+            hex = hex.slice(0, index+2) + dat + hex.slice(index+2+dat.length);
+            index+=8
+        }
     }
 }
 
