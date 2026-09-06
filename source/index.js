@@ -1,7 +1,14 @@
 const fs = require('fs')
 const convert = require('./convert.js')
 
-const source = fs.readFileSync('./macro.inc').toString()
+if(!fs.existsSync('./cache')){
+    fs.mkdirSync('./cache')
+}
+if(!fs.existsSync('./dist')){
+    fs.mkdirSync('./dist')
+}
+
+const source = fs.readFileSync('./examples/macro.inc').toString()
 
 const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)|(\:)/gm).filter(f=>f?(f.length):false)
 tokens.push('\n')
@@ -243,7 +250,7 @@ for(const RP of REPLS){
     }
 }
 
-fs.writeFileSync('./hex.txt',hex)
+fs.writeFileSync('./dist/hex.txt',hex)
 
 
 function removeParents(node){
@@ -258,7 +265,7 @@ function removeParents(node){
 
 console.log(removeParents(AST))
 
-fs.writeFileSync('./AST.json',JSON.stringify(AST,null,4))
+fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
 console.log(DATASET)
 console.log(REPLS)
