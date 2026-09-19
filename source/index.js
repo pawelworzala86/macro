@@ -25,18 +25,37 @@ let activeAST = AST
 
 const MACROS = {}
 
+function readCommaSeparatedParams(tokenList, startIndex){
+    const params = []
+    let current = []
+    let index = startIndex
+
+    while(index < tokenList.length && tokenList[index] !== '\n'){
+        if(tokenList[index] === ','){
+            if(current.length){
+                params.push(current.join(' '))
+                current = []
+            }
+            index++
+            continue
+        }
+        current.push(tokenList[index])
+        index++
+    }
+
+    if(current.length){
+        params.push(current.join(' '))
+    }
+
+    return { params, nextIndex: index }
+}
+
 for(let index=0;index<tokens.length;index++){
     const token = tokens[index]
 
     if(Object.keys(dataTypes).includes(token)){
-        index++
-        const params = []
-        while(tokens[index]!='\n'){
-            if(tokens[index]!=','){
-                params.push(tokens[index])
-            }
-            index++
-        }
+        const { params, nextIndex } = readCommaSeparatedParams(tokens, index + 1)
+        index = nextIndex
         activeAST.body.push({
             kind: token,
             params,
@@ -51,14 +70,8 @@ for(let index=0;index<tokens.length;index++){
             params: [],
             body: [],
         }
-        index+=2
-        const params = []
-        while(tokens[index]!='\n'){
-            if(tokens[index]!=','){
-                params.push(tokens[index])
-            }
-            index++
-        }
+        const { params, nextIndex } = readCommaSeparatedParams(tokens, index + 2)
+        index = nextIndex
         node.params = params
         activeAST.body.push(node)
         activeAST = node
@@ -86,12 +99,8 @@ for(let index=0;index<tokens.length;index++){
             params: [],
         }
         activeAST.body.push(node)
-        const params = []
-        while(tokens[++index]!='\n'){
-            if(tokens[index]!=','){
-                params.push(tokens[index])
-            }
-        }
+        const { params, nextIndex } = readCommaSeparatedParams(tokens, index + 1)
+        index = nextIndex
         node.params = params
     }
     if(token=='if'){
@@ -168,6 +177,12 @@ function parseDataType(value,bytes){
     if(val!==value){
         value = val
     }
+
+    const resolvedMath = parseMath(value)
+    if(resolvedMath !== undefined && resolvedMath !== value && !Number.isNaN(Number(resolvedMath))){
+        value = String(resolvedMath)
+    }
+
     if((value.indexOf('.')>-1)||value.endsWith('f')){
         return convert.hexToLE(convert.parseFloatToHex(value,bytes))
     }else if(value.endsWith('u')){
@@ -242,13 +257,37 @@ function executeAST(node){
 executeAST(AST)
 
 function parseMath(d){
-    console.log(d)
-    if(d&&(d.toString().trim().indexOf(' ')>-1)){
-        let parts = d.split(' ').map(d=>{
-            return data(d)
-        })
-        return eval(parts.join(' '))
+    if(d===undefined||d===null){
+        return d
     }
+
+    let expr = d.toString().trim()
+    if(!expr){
+        return d
+    }
+
+    const normalized = expr.replace(/([+\-*/%()])/g,' $1 ').replace(/\s+/g,' ').trim()
+    const tokens = normalized.split(/\s+/).filter(Boolean)
+
+    if(tokens.length > 1 || /[+\-*/%()]/.test(expr)){
+        const resolved = tokens.map(part => {
+            if(/[+\-*/%()]/.test(part)){
+                return part
+            }
+            const value = data(part)
+            if(value === part){
+                return part
+            }
+            return parseMath(value)
+        }).join(' ')
+
+        try {
+            return eval(resolved)
+        }catch(err){
+            return d
+        }
+    }
+
     return d
 }
 

@@ -33,3 +33,5 @@ db 'hello',0
 PROPA = VALA + 10
 
 dd PROPA
+
+dd PROPA + 1, 0
