@@ -127,10 +127,14 @@ for(let index=0;index<tokens.length;index++){
     }
     if(token=='='){
         const name = tokens[index-1]
+        let value = []
+        while(tokens[++index]!=='\n'){
+            value.push(tokens[index])
+        }
         const node = {
             kind: 'assign',
             name,
-            value: tokens[++index],
+            value: value.join(' '),
         }
         activeAST.body.push(node) 
     }
@@ -237,9 +241,21 @@ function executeAST(node){
 
 executeAST(AST)
 
+function parseMath(d){
+    console.log(d)
+    if(d&&(d.toString().indexOf('+')>-1)){
+        let parts = d.split(' ').map(d=>{
+            return data(d)
+        })
+        return eval(parts.join(' '))
+    }
+    return d
+}
+
 for(const RP of REPLS){
     let off = 0
     let dat = data(RP.ext)
+    dat = parseMath(dat)
     dat = convert.hexToLE(convert.parseIntToHex(dat,4))
     console.log('dat',dat)
     for(let index=0;index<hex.length;index++){

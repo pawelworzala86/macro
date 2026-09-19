@@ -29,3 +29,7 @@ testFunc:
 dd VALA,64
 
 db 'hello',0
+
+PROPA = VALA + 10
+
+dd PROPA
