@@ -243,7 +243,7 @@ executeAST(AST)
 
 function parseMath(d){
     console.log(d)
-    if(d&&(d.toString().indexOf('+')>-1)){
+    if(d&&(d.toString().trim().indexOf(' ')>-1)){
         let parts = d.split(' ').map(d=>{
             return data(d)
         })
