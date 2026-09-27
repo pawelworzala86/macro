@@ -175,17 +175,20 @@ for(let index=0;index<tokens.length;index++){
         }
         activeAST.body.push(node)
     }
-    if(token=='mov'){
+    if(asmCmds.includes(token)){
         const name = token
-        const param1 = tokens[++index]
+        const values = [tokens[++index]]
         index++
-        const param2 = tokens[++index]
-        const values = [param1, param2]
+        if(tokens[index]==','){
+            const param2 = tokens[++index]
+            values.push(param2)
+        }
         const node = {
             kind: 'asm',
             name,
             values,
         }
+        console.log('ASM node',node)
         activeAST.body.push(node)
     }
 }
@@ -288,7 +291,7 @@ function executeAST(node){
                 const params = n.values
                 const instruct = parseInstruction(cmd+' '+params.join(', '))
                 const code2 = opcode.encode(instruct, params);
-                const code = code2.join(' ')//.replace(/\,/gm,' ')
+                const code = code2.join('')//.replace(/\,/gm,' ')
                 addHex(code+'\n')
             }
         }

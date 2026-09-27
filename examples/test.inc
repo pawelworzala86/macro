@@ -1,4 +1,4 @@
-macro test paramA, paramB
+macro testM paramA, paramB
     hex paramA 00 00 00
     if 1==0
         hex 10
@@ -13,8 +13,8 @@ macro test paramA, paramB
     test2
 end macro
 
-test 01 08
-test 22 07
+testM 01 08
+testM 22 07
 
 dd 100
 dd 100u
