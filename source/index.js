@@ -163,6 +163,19 @@ for(let index=0;index<tokens.length;index++){
         }
         activeAST.body.push(node)
     }
+    if(token=='mov'){
+        const name = token
+        const param1 = tokens[++index]
+        index++
+        const param2 = tokens[++index]
+        const values = [param1, param2]
+        const node = {
+            kind: 'asm',
+            name,
+            values,
+        }
+        activeAST.body.push(node)
+    }
 }
 
 let OFFSET = 0
@@ -256,6 +269,9 @@ function executeAST(node){
             }
             if(n.kind=='label'){
                 DATASET[n.name] = OFFSET
+            }
+            if(n.kind=='asm'){
+                addHex('FFFFFFFF'+'\n')
             }
         }
         PARAMS.splice(PARAMS.length-1,1)
