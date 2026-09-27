@@ -1,5 +1,5 @@
 run in terminal:\
-.\test.cmd\
+.\test.cmd
 
 output exe dir:\
 .\dist
