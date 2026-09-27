@@ -1,6 +1,13 @@
 const fs = require('fs')
 const convert = require('./convert.js')
 
+
+
+
+const sourceFileName = process.argv[2].replace(/\'|\"/gm,'') //'./examples/test.inc'
+const destFileName = process.argv[3].replace(/\'|\"/gm,'') //'./dist/test.txt'
+
+
 if(!fs.existsSync('./cache')){
     fs.mkdirSync('./cache')
 }
@@ -8,7 +15,8 @@ if(!fs.existsSync('./dist')){
     fs.mkdirSync('./dist')
 }
 
-const source = fs.readFileSync('./examples/macro.inc').toString()
+let source = fs.readFileSync(sourceFileName).toString()
+source = source.replace(/\;.*/gm,'')
 
 const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)|(\:)/gm).filter(f=>f?(f.length):false)
 tokens.push('\n')
@@ -308,7 +316,17 @@ for(const RP of REPLS){
     }
 }
 
-fs.writeFileSync('./dist/hex.txt',hex)
+
+
+
+
+if(destFileName.indexOf('.exe')>-1){
+    const chex = hex.replace(/\ |\n|\r|\t/gm,'')
+    const uint8 = Uint8Array.from(Buffer.from(chex, 'hex'));
+    fs.writeFileSync(destFileName, uint8)
+}else{
+    fs.writeFileSync(destFileName,hex)
+}
 
 
 function removeParents(node){
