@@ -1,6 +1,18 @@
 const fs = require('fs')
 const convert = require('./convert.js')
 
+const instructions = require('./instructions.js')
+const parseInstruction = require('./mnemonic.js')
+const opcode = require('./opcode.js')
+
+const asmInstructs = {}
+instructions.map(instr=>{
+    const mnemonic = instr.mnemonic
+    const params = instr.mnemonic.indexOf(',')>-1
+    asmInstructs[mnemonic.split(' ')[0]] = params?2:1
+})
+const asmCmds = Object.keys(asmInstructs)
+
 
 
 
@@ -270,8 +282,14 @@ function executeAST(node){
             if(n.kind=='label'){
                 DATASET[n.name] = OFFSET
             }
+
             if(n.kind=='asm'){
-                addHex('FFFFFFFF'+'\n')
+                const cmd = n.name
+                const params = n.values
+                const instruct = parseInstruction(cmd+' '+params.join(', '))
+                const code2 = opcode.encode(instruct, params);
+                const code = code2.join(' ')//.replace(/\,/gm,' ')
+                addHex(code+'\n')
             }
         }
         PARAMS.splice(PARAMS.length-1,1)
