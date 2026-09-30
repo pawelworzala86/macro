@@ -409,3 +409,15 @@ fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
 console.log(DATASET)
 console.log(REPLS)
+
+const RVA_TEXT_START = 0x1000;
+
+if(DATASET['helloTxt']){
+    const stringHelloRva = DATASET['helloTxt']
+    const ripAfterLea    = RVA_TEXT_START + 0x08 + 7;
+    const offsetToHello  = stringHelloRva - ripAfterLea;
+    //const offsetToHello = RVA_TEXT_START
+    //writeUInt32LE(code, offsetToHello, 0x0B, 'RIP-rel offset do "Hello World!"');
+    let val = convert.hexToLE(convert.parseIntToHex(offsetToHello.toString(),4))
+    console.log(val)
+}
