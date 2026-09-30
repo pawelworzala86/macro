@@ -381,7 +381,10 @@ function parseMath(d){
     return d
 }
 
+
 const RVA_TEXT_START = 0x1000;
+console.log(REPLS)
+console.log(hex.length)
 
 for(const RP of REPLS){
     let off = 0
@@ -389,6 +392,8 @@ for(const RP of REPLS){
     dat = parseMath(dat)
 
     let leftInsertOffset = 2
+
+    console.log('dat',dat)
 
     if(RP.kind&&(RP.kind=='callData')){
         const stringHelloRva = dat//DATASET['helloTxt']
@@ -400,7 +405,11 @@ for(const RP of REPLS){
         //process.exit()
 
         leftInsertOffset = 1
+    }else{
+        dat = convert.hexToLE(convert.parseIntToHex(dat,4))
     }
+
+    console.log('dat',dat)
 
     for(let index=0;index<hex.length;index++){
         if(!['\r','\n','\ '].includes(hex.charAt(index))){
@@ -411,11 +420,13 @@ for(const RP of REPLS){
             index+=8
         }
     }
+
+    console.log('A')
 }
 
 
 
-
+console.log('A')
 
 if(destFileName.indexOf('.exe')>-1){
     const chex = hex.replace(/\ |\n|\r|\t/gm,'')
