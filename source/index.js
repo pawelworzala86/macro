@@ -230,6 +230,8 @@ function parseDataType(value,bytes){
         value = String(resolvedMath)
     }
 
+    value = value.toString()
+
     if((value.indexOf('.')>-1)||value.endsWith('f')){
         return convert.hexToLE(convert.parseFloatToHex(value,bytes))
     }else if(value.endsWith('u')){
@@ -291,7 +293,11 @@ function executeAST(node){
                 })
             }
             if(n.kind=='assign'){
-                DATASET[n.name] = n.value
+                let parsedData = n.value
+                if(parseInt(n.value)||(n.value=='0')){
+                    parsedData = parseInt(n.value)
+                }
+                DATASET[n.name] = parsedData
             }
             if(n.kind=='label'){
                 DATASET[n.name] = DATASET['OFFSET']
