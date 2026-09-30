@@ -315,9 +315,27 @@ function executeAST(node){
 
             if(n.kind=='asm'){
                 const cmd = n.name
-                const params = n.values
+                let params = n.values
                 const instruct = parseInstruction(cmd+' '+params.join(', '))
                 const code2 = opcode.encode(instruct, params);
+                console.log(code2)
+                params = params.map(p=>{
+                    if((p.indexOf('[0x')==-1)&&(p[0]=='[')){
+                        let value = p.substring(1,p.length-1)
+                        console.log(value)
+                        REPLS.push({
+                            kind: 'callData',
+                            ext: value,
+                            OFFSET: totalOFFSET + (code2.length-4),
+                            callOFFSET: DATASET['OFFSET'],
+                            length: code2.length,
+                        })
+                        return '00000000'
+                    }else{
+                        return p
+                    }
+                })
+                console.log(params)
                 const code = code2.join('')//.replace(/\,/gm,' ')
                 addHex(code+'\n')
             }
@@ -363,18 +381,33 @@ function parseMath(d){
     return d
 }
 
+const RVA_TEXT_START = 0x1000;
+
 for(const RP of REPLS){
     let off = 0
     let dat = data(RP.ext)
     dat = parseMath(dat)
-    dat = convert.hexToLE(convert.parseIntToHex(dat,4))
-    console.log('dat',dat)
+
+    let leftInsertOffset = 2
+
+    if(RP.kind&&(RP.kind=='callData')){
+        const stringHelloRva = dat//DATASET['helloTxt']
+        const ripAfterLea    = RVA_TEXT_START + RP.callOFFSET + RP.length
+        const offsetToHello  = stringHelloRva - ripAfterLea;
+
+        dat = convert.hexToLE(convert.parseIntToHex(offsetToHello,4))
+        console.log('dat',dat)
+        //process.exit()
+
+        leftInsertOffset = 1
+    }
+
     for(let index=0;index<hex.length;index++){
         if(!['\r','\n','\ '].includes(hex.charAt(index))){
             off+=0.5
         }
         if(off==RP.OFFSET){
-            hex = hex.slice(0, index+2) + dat + hex.slice(index+2+dat.length);
+            hex = hex.slice(0, index+leftInsertOffset) + dat + hex.slice(index+2+dat.length);
             index+=8
         }
     }
@@ -388,6 +421,7 @@ if(destFileName.indexOf('.exe')>-1){
     const chex = hex.replace(/\ |\n|\r|\t/gm,'')
     const uint8 = Uint8Array.from(Buffer.from(chex, 'hex'));
     fs.writeFileSync(destFileName, uint8)
+    fs.writeFileSync(destFileName.replace('.exe','.txt'),hex)
 }else{
     fs.writeFileSync(destFileName,hex)
 }
@@ -410,7 +444,7 @@ fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 console.log(DATASET)
 console.log(REPLS)
 
-const RVA_TEXT_START = 0x1000;
+
 
 if(DATASET['helloTxt']){
     const stringHelloRva = DATASET['helloTxt']

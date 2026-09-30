@@ -69,9 +69,10 @@ hex 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0
 OFFSET = 0
 
 sub rsp, 40         ; hex 48 83 EC 28
-hex 48 83 E4 F0 ; and rsp, -16
+and rsp, -16        ; hex 48 83 E4 F0
 callDataOffset:
-hex 48 8D 0D B7 10 00 00 ; lea rcx, [RIP + ?]
+;hex 48 8D 0D B7 10 00 00 ; lea rcx, [RIP + ?]
+lea rcx, [helloTxt]
 hex 31 C0 ; xor eax, eax
 hex FF 15 60 10 00 00 ; call [RIP + ?] ; printf
 hex 31 C9 ; xor ecx, ecx
