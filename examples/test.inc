@@ -37,3 +37,5 @@ dd PROPA
 dd PROPA + 1, 0
 
 mov rax,[0x00000011]
+
+ALGIN 128

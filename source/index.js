@@ -175,6 +175,14 @@ for(let index=0;index<tokens.length;index++){
         }
         activeAST.body.push(node)
     }
+    if(token=='ALGIN'){
+        const value = tokens[++index]
+        const node = {
+            kind: 'ALGIN',
+            value,
+        }
+        activeAST.body.push(node)
+    }
     if(asmCmds.includes(token)){
         const name = token
         const values = [tokens[++index]]
@@ -287,6 +295,16 @@ function executeAST(node){
             }
             if(n.kind=='label'){
                 DATASET[n.name] = DATASET['OFFSET']
+            }
+            if(n.kind=='ALGIN'){
+                const value = n.value
+                const paddingCount = (value - (totalOFFSET % value)) % value
+                let code = ''
+                for(let i = 0; i < paddingCount; i++){
+                    code += '00'
+                    totalOFFSET++
+                }
+                addHex(code+'\n')
             }
 
             if(n.kind=='asm'){
