@@ -193,14 +193,17 @@ for(let index=0;index<tokens.length;index++){
     }
 }
 
-let OFFSET = 0
+let totalOFFSET = 0
 let hex = ''
 let PARAMS = []
-let DATASET = {}
+let DATASET = {
+    OFFSET: 0,
+}
 
 function addHex(value){
     const clear = value.replace(/\ |\n|\r/gm,'')
-    OFFSET += clear.length/2
+    DATASET['OFFSET'] += clear.length/2
+    totalOFFSET += clear.length/2
     hex += value
 }
 
@@ -230,7 +233,7 @@ function parseDataType(value,bytes){
     }
     REPLS.push({
         ext: value,
-        OFFSET,
+        OFFSET: DATASET['OFFSET'],
     })
     return '00000000'
 }
@@ -283,7 +286,7 @@ function executeAST(node){
                 DATASET[n.name] = n.value
             }
             if(n.kind=='label'){
-                DATASET[n.name] = OFFSET
+                DATASET[n.name] = DATASET['OFFSET']
             }
 
             if(n.kind=='asm'){

@@ -1,4 +1,3 @@
-dist/*.txt
 dist/*.exe
 
 cache/*.json
