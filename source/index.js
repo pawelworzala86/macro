@@ -225,7 +225,7 @@ function addHex(value){
     const clear = value.replace(/\ |\n|\r/gm,'')
     DATASET['OFFSET'] += clear.length/2
     totalOFFSET += clear.length/2
-    hex += value
+    hex += clear
 }
 
 
@@ -254,6 +254,7 @@ function parseDataType(value,bytes){
     }else if(value.startsWith("'")&&value.endsWith("'")){
         return convert.stringToHex(value)
     }
+    
     REPLS.push({
         ext: value,
         OFFSET: DATASET['OFFSET'],
@@ -427,6 +428,8 @@ console.log(hex.length)
 
 for(const RP of REPLS){
     let off = 0
+
+    console.log('RP.ext',RP.ext)
     let dat = data(RP.ext)
     dat = parseMath(dat)
 
@@ -463,15 +466,15 @@ for(const RP of REPLS){
 
     console.log('dat',dat)
 
-    for(let index=0;index<hex.length;index++){
-        if(!['\r','\n','\ '].includes(hex.charAt(index))){
-            off+=0.5
-        }
-        if(off==RP.OFFSET){
-            hex = hex.slice(0, index+leftInsertOffset) + dat + hex.slice(index+2+dat.length);
-            index+=8
-        }
-    }
+    //for(let index=0;index<hex.length;index++){
+        //if(!['\r','\n','\ '].includes(hex.charAt(index))){
+        //    off+=0.5
+        //}
+        //if(off==RP.OFFSET){
+            hex = hex.slice(0, RP.OFFSET*2) + dat + hex.slice(RP.OFFSET*2+8);
+           // index+=8
+        //}
+    //}
 
     console.log('A')
 }
@@ -505,7 +508,7 @@ function removeParents(node){
 fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
 //console.log(DATASET)
-//console.log(REPLS)
+console.log(REPLS)
 
 
 /*
