@@ -222,7 +222,8 @@ let DATASET = {
 let iatOffset = 0
 
 function addHex(value){
-    const clear = value.replace(/\ |\n|\r/gm,'')
+    const clear = value.replace(/\ |\n|\r|\t/gm,'').trim()
+    //console.log('addHex',clear)
     DATASET['OFFSET'] += clear.length/2
     totalOFFSET += clear.length/2
     hex += clear
@@ -257,7 +258,7 @@ function parseDataType(value,bytes){
     
     REPLS.push({
         ext: value,
-        OFFSET: DATASET['OFFSET'],
+        OFFSET: totalOFFSET,//DATASET['OFFSET'],
     })
     return '00000000'
 }
@@ -322,7 +323,6 @@ function executeAST(node){
                 let code = ''
                 for(let i = 0; i < paddingCount; i++){
                     code += '00'
-                    totalOFFSET++
                 }
                 addHex(code+'\n')
             }
@@ -507,8 +507,8 @@ function removeParents(node){
 
 fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
-//console.log(DATASET)
-console.log(REPLS)
+console.log(DATASET)
+//console.log(REPLS)
 
 
 /*
