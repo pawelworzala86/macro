@@ -87,14 +87,14 @@ OFFSET = 8192
 dd kernel32_ilt    ;OriginalFirstThunk (ILT) dla kernel32.dll
 hex 00 00 00 00    ;TimeDateStamp
 hex 00 00 00 00    ;ForwarderChain
-hex 6A 20 00 00    ;Name RVA dla kernel32.dll
-hex 3C 20 00 00    ;FirstThunk (IAT) dla kernel32.dll
+dd kernel32_dll_name    ;Name RVA dla kernel32.dll
+dd kernel32_iat    ;FirstThunk (IAT) dla kernel32.dll
 
-hex 8F 20 00 00    ;OriginalFirstThunk (ILT) dla msvcrt.dll
+dd msvcrt_ilt    ;OriginalFirstThunk (ILT) dla msvcrt.dll
 hex 00 00 00 00    ;TimeDateStamp
 hex 00 00 00 00    ;ForwarderChain
-hex BB 20 00 00    ;Name RVA dla msvcrt.dll
-hex 77 20 00 00    ;FirstThunk (IAT) dla msvcrt.dll
+dd msvcrt_dll_name    ;Name RVA dla msvcrt.dll
+dd msvcrt_iat    ;FirstThunk (IAT) dla msvcrt.dll
 
 hex 00 00 00 00    ;Null Import Descriptor
 hex 00 00 00 00    ;Null Import Descriptor
@@ -104,38 +104,54 @@ hex 00 00 00 00    ;Null Import Descriptor
 
 kernel32_iat:
 ExitProcess:
-dd ExitProcess_name     ;IAT Entry: kernel32.dll!ExitProcess
+dd ExitProcess_name    ;IAT Entry: kernel32.dll!ExitProcess
 hex 00 00 00 00
 hex 00 00 00 00    ;IAT NULL Terminator dla kernel32.dll
 hex 00 00 00 00
 kernel32_ilt:
-dd ExitProcess_name     ;ILT Entry: kernel32.dll!ExitProcess
+dd ExitProcess_name    ;ILT Entry: kernel32.dll!ExitProcess
 hex 00 00 00 00
 hex 00 00 00 00    ;ILT NULL Terminator dla kernel32.dll
 
 iDATA
-hex 00 00 00 00 00 00 
+hex 00 00 00 00 00 00
 ExitProcess_name:
-hex 45 78 69 74 50 72 6F 63 65 73 73 00
+db 'ExitProcess',0
 dDATA
 kernel32_dll_name:
-hex 6B 65 72 6E 65 6C 33 32 2E 64 6C 6C 00
+db 'kernel32.dll',0
 
+msvcrt_iat:
 printf:
-hex A7 20 00 00    ;IAT Entry: msvcrt.dll!printf
+dd printf_name    ;IAT Entry: msvcrt.dll!printf
 hex 00 00 00 00
-hex B1 20 00 00    ;IAT Entry: msvcrt.dll!malloc
+malloc:
+dd malloc_name    ;IAT Entry: msvcrt.dll!malloc
 hex 00 00 00 00
 hex 00 00 00 00    ;IAT NULL Terminator dla msvcrt.dll
 hex 00 00 00 00
-hex A7 20 00 00    ;ILT Entry: msvcrt.dll!printf
+msvcrt_ilt:
+dd printf_name    ;ILT Entry: msvcrt.dll!printf
 hex 00 00 00 00
-hex B1 20 00 00    ;ILT Entry: msvcrt.dll!malloc
+dd malloc_name    ;ILT Entry: msvcrt.dll!malloc
 hex 00 00 00 00
 hex 00 00 00 00    ;ILT NULL Terminator dla msvcrt.dll
 
-hex 00 00 00 00 00 00 70 72 69 6E 74 66 00 00 00 00 6D 61 6C 6C 6F 63 00 00 6D 73 76 63 72 74 2E 64 6C 6C 00 
 
+iDATA
+hex 00 00 00 00 00 00
+printf_name:
+db 'printf',0
+hex 00 00 00 
+malloc_name:
+db 'malloc',0
+hex 00
+dDATA
+
+msvcrt_dll_name:
+db 'msvcrt.dll',0
 
 helloTxt:
-hex 48 65 6C 6C 6F 20 57 6F 72 6C 64 21 0A 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+db 'Hello World!',0
+
+ALIGN 512

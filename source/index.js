@@ -199,6 +199,18 @@ for(let index=0;index<tokens.length;index++){
         console.log('ASM node',node)
         activeAST.body.push(node)
     }
+    /*if(token=='iDATA'){
+        const node = {
+            kind: 'iDATA',
+        }
+        activeAST.body.push(node)
+    }
+    if(token=='dDATA'){
+        const node = {
+            kind: 'dDATA',
+        }
+        activeAST.body.push(node)
+    }*/
 }
 
 let totalOFFSET = 0
@@ -207,6 +219,7 @@ let PARAMS = []
 let DATASET = {
     OFFSET: 0,
 }
+let iatOffset = 0
 
 function addHex(value){
     const clear = value.replace(/\ |\n|\r/gm,'')
@@ -232,7 +245,7 @@ function parseDataType(value,bytes){
 
     value = value.toString()
 
-    if((value.indexOf('.')>-1)||value.endsWith('f')){
+    if((!['"',"'"].includes(value[0]))&&((value.indexOf('.')>-1)||value.endsWith('f'))){
         return convert.hexToLE(convert.parseFloatToHex(value,bytes))
     }else if(value.endsWith('u')){
         return convert.hexToLE(convert.parseUnsignedToHex(value,bytes))
@@ -288,7 +301,7 @@ function executeAST(node){
             if(Object.keys(dataTypes).includes(n.kind)){
                 n.params.map(p=>{
                     const bytes = dataTypes[n.kind]
-                    //console.log(':::',p,bytes)
+                    console.log(':::',p,bytes)
                     addHex(parseDataType(p,bytes)+'\n')
                 })
             }
@@ -300,7 +313,7 @@ function executeAST(node){
                 DATASET[n.name] = parsedData
             }
             if(n.kind=='label'){
-                DATASET[n.name] = DATASET['OFFSET']
+                DATASET[n.name] = DATASET['OFFSET'] //- iatOffset
             }
             if(n.kind=='ALGIN'){
                 const value = n.value
@@ -358,6 +371,13 @@ function executeAST(node){
                 const code = code2.join('')//.replace(/\,/gm,' ')
                 addHex(code+'\n')
             }
+
+            /*if(n.kind=='iDATA'){
+                iatOffset = 2
+            }
+            if(n.kind=='dDATA'){
+                iatOffset = 0
+            }*/
         }
         PARAMS.splice(PARAMS.length-1,1)
     }
@@ -420,7 +440,10 @@ for(const RP of REPLS){
         const offsetToHello  = stringHelloRva - ripAfterLea;
 
         dat = convert.hexToLE(convert.parseIntToHex(offsetToHello,4))
-        console.log('dat',dat)
+        //if(RP.ext=='kernel32_dll_name'){
+        console.log('dat',dat, RP.ext)
+          //  process.exit()
+        //}
         //process.exit()
 
         leftInsertOffset = 1
@@ -466,7 +489,7 @@ if(destFileName.indexOf('.exe')>-1){
     fs.writeFileSync(destFileName,hex)
 }
 
-
+/*
 function removeParents(node){
     delete node.parent
     if(node.body){
@@ -475,23 +498,23 @@ function removeParents(node){
         })
     }
     return node
-}
+}*/
 
-console.log(removeParents(AST))
+//console.log(removeParents(AST))
 
 fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
-console.log(DATASET)
-console.log(REPLS)
+//console.log(DATASET)
+//console.log(REPLS)
 
 
-
-if(DATASET['printf']){
-    const stringHelloRva = DATASET['printf']
+/*
+if(DATASET['kernel32_dll_name']){
+    const stringHelloRva = DATASET['kernel32_dll_name']
     const ripAfterLea    = RVA_TEXT_START + 0x11 + 6;
-    const offsetToHello  = stringHelloRva - ripAfterLea;
+    const offsetToHello  = stringHelloRva// - ripAfterLea;
     //const offsetToHello = RVA_TEXT_START
     //writeUInt32LE(code, offsetToHello, 0x0B, 'RIP-rel offset do "Hello World!"');
     let val = convert.hexToLE(convert.parseIntToHex(offsetToHello.toString(),4))
     console.log(val)
-}
+}*/
