@@ -319,22 +319,41 @@ function executeAST(node){
                 const instruct = parseInstruction(cmd+' '+params.join(', '))
                 const code2 = opcode.encode(instruct, params);
                 console.log(code2)
-                params = params.map(p=>{
-                    if((p.indexOf('[0x')==-1)&&(p[0]=='[')){
-                        let value = p.substring(1,p.length-1)
-                        console.log(value)
-                        REPLS.push({
-                            kind: 'callData',
-                            ext: value,
-                            OFFSET: totalOFFSET + (code2.length-4),
-                            callOFFSET: DATASET['OFFSET'],
-                            length: code2.length,
-                        })
-                        return '00000000'
-                    }else{
-                        return p
-                    }
-                })
+                if(cmd=='call'){
+                    params = params.map(p=>{
+                        if((p.indexOf('[0x')==-1)&&(p[0]=='[')){
+                            let value = p.substring(1,p.length-1)
+                            console.log(value)
+                            REPLS.push({
+                                kind: 'callFunc',
+                                ext: value,
+                                OFFSET: totalOFFSET + (code2.length-4),
+                                callOFFSET: DATASET['OFFSET'],
+                                length: code2.length,
+                            })
+                            return '00000000'
+                        }else{
+                            return p
+                        }
+                    })
+                }else{
+                    params = params.map(p=>{
+                        if((p.indexOf('[0x')==-1)&&(p[0]=='[')){
+                            let value = p.substring(1,p.length-1)
+                            console.log(value)
+                            REPLS.push({
+                                kind: 'callData',
+                                ext: value,
+                                OFFSET: totalOFFSET + (code2.length-4),
+                                callOFFSET: DATASET['OFFSET'],
+                                length: code2.length,
+                            })
+                            return '00000000'
+                        }else{
+                            return p
+                        }
+                    })
+                }
                 console.log(params)
                 const code = code2.join('')//.replace(/\,/gm,' ')
                 addHex(code+'\n')
@@ -405,6 +424,16 @@ for(const RP of REPLS){
         //process.exit()
 
         leftInsertOffset = 1
+    }else if(RP.kind&&(RP.kind=='callFunc')){
+        const stringHelloRva = dat//DATASET['helloTxt']
+        const ripAfterLea    = RVA_TEXT_START + RP.callOFFSET + RP.length
+        const offsetToHello  = stringHelloRva - ripAfterLea;
+
+        dat = convert.hexToLE(convert.parseIntToHex(offsetToHello,4))
+        console.log('dat',dat)
+        //process.exit()
+
+        leftInsertOffset = 1
     }else{
         dat = convert.hexToLE(convert.parseIntToHex(dat,4))
     }
@@ -457,9 +486,9 @@ console.log(REPLS)
 
 
 
-if(DATASET['helloTxt']){
-    const stringHelloRva = DATASET['helloTxt']
-    const ripAfterLea    = RVA_TEXT_START + 0x08 + 7;
+if(DATASET['printf']){
+    const stringHelloRva = DATASET['printf']
+    const ripAfterLea    = RVA_TEXT_START + 0x11 + 6;
     const offsetToHello  = stringHelloRva - ripAfterLea;
     //const offsetToHello = RVA_TEXT_START
     //writeUInt32LE(code, offsetToHello, 0x0B, 'RIP-rel offset do "Hello World!"');
