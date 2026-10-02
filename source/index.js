@@ -30,7 +30,7 @@ if(!fs.existsSync('./dist')){
 let source = fs.readFileSync(sourceFileName).toString()
 source = source.replace(/\;.*/gm,'')
 
-const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)|(\:)/gm).filter(f=>f?(f.length):false)
+const tokens = source.split(/\ |(\n)|\r|(\=)|(\,)|(\:)|(\()|(\)|(\{)|(\}))/gm).filter(f=>f?(f.length):false)
 tokens.push('\n')
 
 console.log(tokens)
@@ -42,6 +42,7 @@ const AST = {
     body: [],
 }
 let activeAST = AST
+let lastAST = null
 
 const MACROS = {}
 
@@ -51,6 +52,14 @@ function readCommaSeparatedParams(tokenList, startIndex){
     let index = startIndex
 
     while(index < tokenList.length && tokenList[index] !== '\n'){
+        if(tokenList[index] === ')'){
+            index++
+            break
+        }
+        if(tokenList[index] === '('){
+            index++
+            continue
+        }
         if(tokenList[index] === ','){
             /*if(current.length){
                 params.push(current.join(' '))
@@ -102,6 +111,19 @@ for(let index=0;index<tokens.length;index++){
         activeAST = activeAST.parent
         index++
     }
+    if(token=='{'){
+        const node = {
+            kind: 'block',
+            parent: activeAST,
+            body: [],
+        }
+        lastAST.body.push(node)
+        activeAST = node
+    }
+    if(token=='}'){
+        activeAST = activeAST.parent
+        index++
+    }
     if(token=='hex'){
         let hex = []
         while(tokens[++index]!='\n'){
@@ -117,11 +139,13 @@ for(let index=0;index<tokens.length;index++){
             kind: 'call',
             name: token,
             params: [],
+            body: [],
         }
         activeAST.body.push(node)
         const { params, nextIndex } = readCommaSeparatedParams(tokens, index + 1)
         index = nextIndex
         node.params = params
+        lastAST = node
     }
     if(token=='if'){
         let left = tokens[++index]
