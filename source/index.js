@@ -505,9 +505,9 @@ function removeParents(node){
 
 //console.log(removeParents(AST))
 
-fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
+//fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
-console.log(DATASET)
+//console.log(DATASET)
 //console.log(REPLS)
 
 

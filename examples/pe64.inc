@@ -84,12 +84,12 @@ ALGIN 512
 
 OFFSET = 8192
 
-;hex 4C 20 00 00
+
 dd kernel32_ilt    ;OriginalFirstThunk (ILT) dla kernel32.dll
 hex 00 00 00 00    ;TimeDateStamp
 hex 00 00 00 00    ;ForwarderChain
-hex 6A 20 00 00    ;Name RVA dla kernel32.dll
-hex 3C 20 00 00    ;FirstThunk (IAT) dla kernel32.dll
+dd kernel32_dll_name    ;Name RVA dla kernel32.dll
+dd kernel32_iat    ;FirstThunk (IAT) dla kernel32.dll
 
 hex 8F 20 00 00    ;OriginalFirstThunk (ILT) dla msvcrt.dll
 hex 00 00 00 00    ;TimeDateStamp
