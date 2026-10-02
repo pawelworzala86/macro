@@ -52,14 +52,14 @@ function readCommaSeparatedParams(tokenList, startIndex){
 
     while(index < tokenList.length && tokenList[index] !== '\n'){
         if(tokenList[index] === ','){
-            if(current.length){
+            /*if(current.length){
                 params.push(current.join(' '))
                 current = []
-            }
+            }*/
             index++
             continue
         }
-        current.push(tokenList[index])
+        params.push(tokenList[index])
         index++
     }
 
@@ -281,6 +281,32 @@ function data(name){
     return name
 }
 
+
+
+
+
+
+function removeParents(node){
+    delete node.parent
+    if(node.body){
+        node.body = node.body.map(n=>{
+            return removeParents(n)
+        })
+    }
+    return node
+}
+
+console.log(removeParents(AST))
+
+fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
+
+
+
+
+
+
+
+
 function executeAST(node){
     if(node.body){
         for(const n of node.body){
@@ -492,20 +518,8 @@ if(destFileName.indexOf('.exe')>-1){
     fs.writeFileSync(destFileName,hex)
 }
 
-/*
-function removeParents(node){
-    delete node.parent
-    if(node.body){
-        node.body = node.body.map(n=>{
-            return removeParents(n)
-        })
-    }
-    return node
-}*/
 
-//console.log(removeParents(AST))
 
-//fs.writeFileSync('./cache/AST.json',JSON.stringify(AST,null,4))
 
 //console.log(DATASET)
 //console.log(REPLS)
