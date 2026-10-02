@@ -105,14 +105,14 @@ hex 00 00 00 00    ;Null Import Descriptor
 
 kernel32_iat:
 ExitProcess:
-hex 5C 20 00 00
-;dd ExitProcess_name     ;IAT Entry: kernel32.dll!ExitProcess
+;hex 5C 20 00 00
+dd ExitProcess_name     ;IAT Entry: kernel32.dll!ExitProcess
 hex 00 00 00 00
 hex 00 00 00 00    ;IAT NULL Terminator dla kernel32.dll
 hex 00 00 00 00
 kernel32_ilt:
-hex 5C 20 00 00
-;dd ExitProcess_name     ;ILT Entry: kernel32.dll!ExitProcess
+;hex 5C 20 00 00
+dd ExitProcess_name     ;ILT Entry: kernel32.dll!ExitProcess
 hex 00 00 00 00
 hex 00 00 00 00    ;ILT NULL Terminator dla kernel32.dll
 

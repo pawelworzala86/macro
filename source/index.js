@@ -199,7 +199,7 @@ for(let index=0;index<tokens.length;index++){
         console.log('ASM node',node)
         activeAST.body.push(node)
     }
-    /*if(token=='iDATA'){
+    if(token=='iDATA'){
         const node = {
             kind: 'iDATA',
         }
@@ -210,7 +210,7 @@ for(let index=0;index<tokens.length;index++){
             kind: 'dDATA',
         }
         activeAST.body.push(node)
-    }*/
+    }
 }
 
 let totalOFFSET = 0
@@ -315,7 +315,7 @@ function executeAST(node){
                 DATASET[n.name] = parsedData
             }
             if(n.kind=='label'){
-                DATASET[n.name] = DATASET['OFFSET'] //- iatOffset
+                DATASET[n.name] = DATASET['OFFSET'] - iatOffset
             }
             if(n.kind=='ALGIN'){
                 const value = n.value
@@ -373,12 +373,12 @@ function executeAST(node){
                 addHex(code+'\n')
             }
 
-            /*if(n.kind=='iDATA'){
+            if(n.kind=='iDATA'){
                 iatOffset = 2
             }
             if(n.kind=='dDATA'){
                 iatOffset = 0
-            }*/
+            }
         }
         PARAMS.splice(PARAMS.length-1,1)
     }
